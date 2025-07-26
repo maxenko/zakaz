@@ -4,7 +4,10 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
       "Bash(mkdir:*)",
-      "Bash(cargo:*)"
+      "Bash(cargo:*)",
+      "WebFetch(domain:crates.io)",
+      "Bash(del uicomponentsc-tabs-basic.slint)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

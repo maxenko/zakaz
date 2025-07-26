@@ -15,6 +15,7 @@ log = "0.4"
 simplelog = "0.12"
 thiserror = "1.0"
 mailbox_processor = { path = "../shared/mailbox_processor" }
+ibapi = "1.2.2"
 
 [build-dependencies]
 slint-build = "1.12"
