@@ -1,0 +1,133 @@
+import { Button, VerticalBox, HorizontalBox, GridBox } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "Zakaz Application - Mailbox Processor Demo";
+    width: 800px;
+    height: 600px;
+    
+    // Properties
+    in property <int> counter: 0;
+    in property <string> status-message: "Ready";
+    in property <string> error-message: "";
+    in property <bool> runtime-running: false;
+    
+    // Callbacks
+    callback increment-clicked();
+    callback decrement-clicked();
+    callback reset-clicked();
+    callback start-clicked();
+    callback stop-clicked();
+    
+    VerticalBox {
+        padding: 20px;
+        spacing: 20px;
+        
+        // Title
+        Text {
+            text: "Mailbox Processor Demo";
+            font-size: 24px;
+            horizontal-alignment: center;
+        }
+        
+        // Runtime status
+        HorizontalBox {
+            spacing: 10px;
+            Rectangle {
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background: runtime-running ? #4CAF50 : #F44336;
+            }
+            Text {
+                text: runtime-running ? "Runtime Running" : "Runtime Stopped";
+                vertical-alignment: center;
+            }
+        }
+        
+        // Counter display
+        Rectangle {
+            border-radius: 10px;
+            background: #f0f0f0;
+            height: 100px;
+            
+            VerticalBox {
+                padding: 20px;
+                Text {
+                    text: "Counter Value";
+                    horizontal-alignment: center;
+                    font-size: 16px;
+                }
+                Text {
+                    text: counter;
+                    horizontal-alignment: center;
+                    font-size: 48px;
+                    font-weight: 700;
+                }
+            }
+        }
+        
+        // Control buttons
+        GridBox {
+            spacing: 10px;
+            Row {
+                Button {
+                    text: "Increment (+1)";
+                    clicked => { increment-clicked(); }
+                    enabled: runtime-running;
+                }
+                Button {
+                    text: "Decrement (-1)";
+                    clicked => { decrement-clicked(); }
+                    enabled: runtime-running;
+                }
+                Button {
+                    text: "Reset (0)";
+                    clicked => { reset-clicked(); }
+                    enabled: runtime-running;
+                }
+            }
+        }
+        
+        // Runtime controls
+        HorizontalBox {
+            spacing: 10px;
+            Button {
+                text: "Start Runtime";
+                clicked => { start-clicked(); }
+                enabled: !runtime-running;
+            }
+            Button {
+                text: "Stop Runtime";
+                clicked => { stop-clicked(); }
+                enabled: runtime-running;
+            }
+        }
+        
+        // Status message
+        if status-message != "": Rectangle {
+            border-radius: 5px;
+            background: #e3f2fd;
+            padding: 10px;
+            
+            Text {
+                text: status-message;
+                color: #1976d2;
+            }
+        }
+        
+        // Error message
+        if error-message != "": Rectangle {
+            border-radius: 5px;
+            background: #ffebee;
+            padding: 10px;
+            
+            Text {
+                text: error-message;
+                color: #d32f2f;
+            }
+        }
+        
+        // Spacer
+        Rectangle { }
+    }
+}

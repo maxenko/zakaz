@@ -1,0 +1,20 @@
+[package]
+name = "zakaz"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+slint = "1.12"
+tokio = { version = "1.43", features = ["full"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+futures = "0.3"
+log = "0.4"
+simplelog = "0.12"
+thiserror = "1.0"
+mailbox_processor = { path = "../shared/mailbox_processor" }
+
+[build-dependencies]
+slint-build = "1.12"
