@@ -68,6 +68,40 @@ pub fn get_ui_message_handler(weak_handle: Weak<MainWindow>) -> impl Fn(UIMessag
                     }
                 });
             }
+            UIMessage::IBConnectionStatus { paper_connected, live_connected, active_account } => {
+                inf!("IB connection status update - Paper: {}, Live: {}, Active: {:?}", 
+                    paper_connected, live_connected, active_account);
+                // TODO: Update UI with IB connection status
+            }
+            UIMessage::IBOrderTemplateUpdate { templates } => {
+                inf!("Order templates updated: {} templates", templates.len());
+                // TODO: Update UI with order templates
+            }
+            UIMessage::IBMarketData { symbol, bid, ask, last, volume } => {
+                inf!("Market data for {}: bid={}, ask={}, last={}, volume={}", 
+                    symbol, bid, ask, last, volume);
+                // TODO: Update UI with market data
+            }
+            UIMessage::ChartImageUpdate { image_data, width, height, symbol } => {
+                inf!("Chart image update for {} ({}x{})", symbol, width, height);
+                let _ = slint::invoke_from_event_loop(move || {
+                    if let Some(ui) = ui_handle.upgrade() {
+                        // Create Slint image from RGB data
+                        let pixel_buffer = slint::SharedPixelBuffer::<slint::Rgb8Pixel>::clone_from_slice(
+                            &image_data,
+                            width,
+                            height,
+                        );
+                        let image = slint::Image::from_rgb8(pixel_buffer);
+                        
+                        // Update UI
+                        ui.set_chart_image(image);
+                        ui.set_chart_symbol(symbol.into());
+                    } else {
+                        err!("Failed to get Window pointer");
+                    }
+                });
+            }
         }
     }
 }

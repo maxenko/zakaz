@@ -1,6 +1,8 @@
 use std::sync::Arc;
+
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
+
 use crate::system::{runtime::Runtime, types::UIMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16,6 +18,18 @@ pub struct State {
     /// Runtime reference (not serialized)
     #[serde(skip)]
     pub runtime: Option<Arc<Runtime>>,
+    /// IB client instance (not serialized)
+    #[serde(skip)]
+    pub ib_client: Option<Arc<tokio::sync::Mutex<crate::ib::IBClient>>>,
+    /// Chart data (not serialized)
+    #[serde(skip)]
+    pub chart_data: Option<(String, Vec<crate::ib::types::HistoricalBar>)>,
+    /// Chart viewport controller (not serialized)
+    #[serde(skip)]
+    pub viewport_controller: Option<Arc<tokio::sync::Mutex<crate::charts::ViewportController>>>,
+    /// Chart theme (not serialized)
+    #[serde(skip)]
+    pub chart_theme: Option<crate::charts::ChartTheme>,
 }
 
 impl State {
@@ -26,6 +40,10 @@ impl State {
             start_time: Local::now(),
             is_running: false,
             runtime: None,
+            ib_client: None,
+            chart_data: None,
+            viewport_controller: None,
+            chart_theme: None,
         }
     }
 

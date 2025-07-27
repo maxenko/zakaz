@@ -1,9 +1,18 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+
 mod system;
 mod ui;
 mod error;
+mod ib;
+mod charts;
+mod db;
 
 use std::sync::Arc;
+
 use slint::ComponentHandle;
+
 use crate::system::runtime::Runtime;
 
 slint::include_modules!();

@@ -1,15 +1,21 @@
 import { Button, VerticalBox, HorizontalBox, GridBox } from "std-widgets.slint";
+import { ZTabs } from "components/z-tabs-bottom.slint";
+import { ChartView } from "components/chart-view.slint";
 
 export component MainWindow inherits Window {
-    title: "Zakaz Application - Mailbox Processor Demo";
-    width: 800px;
-    height: 600px;
+    title: "Zakaz Application";
+    preferred-width: 800px;
+    preferred-height: 600px;
+    min-width: 640px;
+    min-height: 480px;
     
     // Properties
     in property <int> counter: 0;
     in property <string> status-message: "Ready";
     in property <string> error-message: "";
     in property <bool> runtime-running: false;
+    in property <image> chart-image;
+    in property <string> chart-symbol: "";
     
     // Callbacks
     callback increment-clicked();
@@ -17,117 +23,193 @@ export component MainWindow inherits Window {
     callback reset-clicked();
     callback start-clicked();
     callback stop-clicked();
+    callback chart-pan(length, length);
+    callback chart-zoom(float, length, length);
+    callback chart-reset-zoom();
+    callback load-test-chart();
     
-    VerticalBox {
-        padding: 20px;
-        spacing: 20px;
+    ZTabs {
+        tabs: ["Chart", "Orders", "Test"];
+        current-index: 0;
         
-        // Title
-        Text {
-            text: "Mailbox Processor Demo";
-            font-size: 24px;
-            horizontal-alignment: center;
-        }
-        
-        // Runtime status
-        HorizontalBox {
-            spacing: 10px;
+        if self.current-index == 0: VerticalBox {
+            padding: 0px;
+            
+            // Control bar
             Rectangle {
-                width: 20px;
-                height: 20px;
+                height: 50px;
+                background: #f0f0f0;
+                
+                HorizontalBox {
+                    spacing: 10px;
+                    
+                    Button {
+                        text: "Load AAPL Chart";
+                        clicked => { load-test-chart(); }
+                    }
+                    
+                    Rectangle { } // Spacer
+                }
+            }
+            
+            // Chart view
+            ChartView {
+                chart-image: chart-image;
+                symbol: chart-symbol;
+                
+                pan(dx, dy) => {
+                    chart-pan(dx, dy);
+                }
+                
+                zoom(factor, x, y) => {
+                    chart-zoom(factor, x, y);
+                }
+                
+                reset-zoom() => {
+                    chart-reset-zoom();
+                }
+            }
+        }
+        
+        if self.current-index == 1: VerticalBox {
+            padding: 20px;
+            spacing: 20px;
+            
+            Text {
+                text: "Orders";
+                font-size: 24px;
+                horizontal-alignment: center;
+            }
+            
+            // Orders content placeholder
+            Rectangle {
+                background: #f0f0f0;
+                border-radius: 5px;
+                height: 200px;
+                
+                Text {
+                    text: "Orders content will go here";
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                    color: #666666;
+                }
+            }
+            
+            // Spacer
+            Rectangle { }
+        }
+        
+        if self.current-index == 2: VerticalBox {
+            padding: 20px;
+            spacing: 20px;
+            
+            // Title
+            Text {
+                text: "Mailbox Processor Demo";
+                font-size: 24px;
+                horizontal-alignment: center;
+            }
+            
+            // Runtime status
+            HorizontalBox {
+                spacing: 10px;
+                Rectangle {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 10px;
+                    background: runtime-running ? #4CAF50 : #F44336;
+                }
+                Text {
+                    text: runtime-running ? "Runtime Running" : "Runtime Stopped";
+                    vertical-alignment: center;
+                }
+            }
+            
+            // Counter display
+            Rectangle {
                 border-radius: 10px;
-                background: runtime-running ? #4CAF50 : #F44336;
+                background: #f0f0f0;
+                height: 100px;
+                
+                VerticalBox {
+                    padding: 20px;
+                    Text {
+                        text: "Counter Value";
+                        horizontal-alignment: center;
+                        font-size: 16px;
+                    }
+                    Text {
+                        text: counter;
+                        horizontal-alignment: center;
+                        font-size: 48px;
+                        font-weight: 700;
+                    }
+                }
             }
-            Text {
-                text: runtime-running ? "Runtime Running" : "Runtime Stopped";
-                vertical-alignment: center;
-            }
-        }
-        
-        // Counter display
-        Rectangle {
-            border-radius: 10px;
-            background: #f0f0f0;
-            height: 100px;
             
-            VerticalBox {
-                padding: 20px;
+            // Control buttons
+            GridBox {
+                spacing: 10px;
+                Row {
+                    Button {
+                        text: "Increment (+1)";
+                        clicked => { increment-clicked(); }
+                        enabled: runtime-running;
+                    }
+                    Button {
+                        text: "Decrement (-1)";
+                        clicked => { decrement-clicked(); }
+                        enabled: runtime-running;
+                    }
+                    Button {
+                        text: "Reset (0)";
+                        clicked => { reset-clicked(); }
+                        enabled: runtime-running;
+                    }
+                }
+            }
+            
+            // Runtime controls
+            HorizontalBox {
+                spacing: 10px;
+                Button {
+                    text: "Start Runtime";
+                    clicked => { start-clicked(); }
+                    enabled: !runtime-running;
+                }
+                Button {
+                    text: "Stop Runtime";
+                    clicked => { stop-clicked(); }
+                    enabled: runtime-running;
+                }
+            }
+            
+            // Status message
+            if status-message != "": Rectangle {
+                border-radius: 5px;
+                background: #e3f2fd;
+                padding: 10px;
+                
                 Text {
-                    text: "Counter Value";
-                    horizontal-alignment: center;
-                    font-size: 16px;
+                    text: status-message;
+                    color: #1976d2;
                 }
+            }
+            
+            // Error message
+            if error-message != "": Rectangle {
+                border-radius: 5px;
+                background: #ffebee;
+                padding: 10px;
+                
                 Text {
-                    text: counter;
-                    horizontal-alignment: center;
-                    font-size: 48px;
-                    font-weight: 700;
+                    text: error-message;
+                    color: #d32f2f;
                 }
             }
-        }
-        
-        // Control buttons
-        GridBox {
-            spacing: 10px;
-            Row {
-                Button {
-                    text: "Increment (+1)";
-                    clicked => { increment-clicked(); }
-                    enabled: runtime-running;
-                }
-                Button {
-                    text: "Decrement (-1)";
-                    clicked => { decrement-clicked(); }
-                    enabled: runtime-running;
-                }
-                Button {
-                    text: "Reset (0)";
-                    clicked => { reset-clicked(); }
-                    enabled: runtime-running;
-                }
-            }
-        }
-        
-        // Runtime controls
-        HorizontalBox {
-            spacing: 10px;
-            Button {
-                text: "Start Runtime";
-                clicked => { start-clicked(); }
-                enabled: !runtime-running;
-            }
-            Button {
-                text: "Stop Runtime";
-                clicked => { stop-clicked(); }
-                enabled: runtime-running;
-            }
-        }
-        
-        // Status message
-        if status-message != "": Rectangle {
-            border-radius: 5px;
-            background: #e3f2fd;
-            padding: 10px;
             
-            Text {
-                text: status-message;
-                color: #1976d2;
-            }
+            // Spacer
+            Rectangle { }
         }
-        
-        // Error message
-        if error-message != "": Rectangle {
-            border-radius: 5px;
-            background: #ffebee;
-            padding: 10px;
-            
-            Text {
-                text: error-message;
-                color: #d32f2f;
-            }
-        }
-        
-        // Spacer
-        Rectangle { }
     }
 }

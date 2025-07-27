@@ -1,10 +1,12 @@
 use std::{
-    fs::{self, File, create_dir_all},
+    fs::{self, create_dir_all, File},
     path::PathBuf,
     sync::Once,
 };
+
 use chrono::Local;
 use simplelog::*;
+
 use crate::error::{AppError, AppResult};
 
 pub struct Log;

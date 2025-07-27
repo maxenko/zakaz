@@ -1,10 +1,11 @@
 use std::sync::Arc;
+
 use chrono::Local;
 use mailbox_processor::{BufferSize, MailboxProcessor};
 use tokio::sync::Mutex;
 
 use crate::{
-    inf, err, notify_channel,
+    err, inf, notify_channel,
     system::{
         state::State,
         types::{RuntimeInMessage, RuntimeOutMessage, UIMessage},
@@ -121,6 +122,17 @@ impl Mailbox {
                         state.send_message_to_ui(UIMessage::ErrorMessage(error_msg.clone()));
                         notify_channel!(reply_channel, RuntimeOutMessage::Error(error_msg));
                         state
+                    }
+
+                    RuntimeInMessage::IB(ib_msg) => {
+                        // Handle IB messages in a separate handler
+                        // Convert mpsc::Sender to oneshot::Sender by not passing reply_channel
+                        crate::system::ib_handler::handle_ib_message(ib_msg, state, None).await
+                    }
+                    
+                    RuntimeInMessage::Chart(chart_msg) => {
+                        // Handle chart messages in a separate handler
+                        crate::system::chart_handler::handle_chart_message(chart_msg, state, None).await
                     }
                 }
             }

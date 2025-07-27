@@ -7,7 +7,10 @@
       "Bash(cargo:*)",
       "WebFetch(domain:crates.io)",
       "Bash(del uicomponentsc-tabs-basic.slint)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "WebFetch(domain:docs.rs)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:interactivebrokers.github.io)"
     ],
     "deny": []
   }

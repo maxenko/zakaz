@@ -1,14 +1,15 @@
 use std::sync::Arc;
-use tokio::sync::Mutex;
+
 use mailbox_processor::MailboxProcessor;
+use tokio::sync::Mutex;
 
 use crate::{
-    inf, err,
+    err, inf,
     system::{
+        event::Event,
         mailbox::Mailbox,
         state::State,
         types::{RuntimeInMessage, RuntimeOutMessage, UIMessage},
-        event::Event,
     },
 };
 
